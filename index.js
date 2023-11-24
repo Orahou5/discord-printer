@@ -16,7 +16,6 @@ client.once("ready", async() => {
 });
 
 client.on("messageCreate", (msg) => {
-    console.log(msg);
     msg.attachments.forEach(async (attachment) => {
         const path = await writeAttachment(attachment.filename, attachment.url);
         printFile(path);
