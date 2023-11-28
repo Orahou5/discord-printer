@@ -1,8 +1,6 @@
 import "dotenv/config.js";
 import { Client } from "oceanic.js";
-import { getPrinterApi, writeAttachment } from './fileManipulation.js';
-
-const printFile = getPrinterApi();
+import { unifiedPrinter, writeAttachment } from './fileManipulation.js';
 
 const client = new Client({ 
     auth: `Bot ${process.env.DISCORD_PRINT}`,
@@ -16,14 +14,31 @@ client.once("ready", async() => {
 });
 
 client.on("messageCreate", (msg) => {
+    let zoom = 100;
+    if(msg.content.includes("--zoom")){
+        const regex = /--zoom (100|[1-9]?[0-9])\b/; // 100 or 0-99
+        zoom = +(msg.content.match(regex)?.[1] ?? 100);
+    }
+
     msg.attachments.forEach(async (attachment) => {
         const path = await writeAttachment(attachment.filename, attachment.url);
-        printFile(path);
+        unifiedPrinter({ 
+            path, 
+            channel: msg.channel,
+            zoom,
+            filename: attachment.filename
+        });
     });
 });
 
 client.on("error", (err) => {
     console.error("Something Broke!", err);
 });
+
+export function sendMessage(channel, content) {
+    channel.createMessage({
+        content,
+    })
+}
 
 client.connect();
