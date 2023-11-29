@@ -15,7 +15,7 @@ let printerSettings = {};
 if(isWindows){
     printerSettings = {
         printer: windowsPrint,
-        otherArgs : (zoom) => [(zoom < 50 ? { scale : "shrink" } : { scale : "fit" })]
+        otherArgs : (zoom) => [(zoom < 50 ? { scale : "shrink", silent: false } : { scale : "fit", silent: false })]
     }
 } else {
     printerSettings = {
@@ -24,11 +24,11 @@ if(isWindows){
     }
 }
 
-console.log(isWindows);
+console.log("isWindows : " ,isWindows);
 
-console.log(isMac);
+console.log("isMac : ", isMac);
 
-console.log(isUnix);
+console.log("isUnix : ", isUnix);
 
 export function unifiedPrinter({ path, zoom = 100, channel, filename }){
     printerSettings.printer.print(path, ...printerSettings.otherArgs(zoom)).then(value => {
@@ -49,7 +49,7 @@ export async function writeAttachment(filename, stream) {
         const pdfRespone = await fetch(stream);
         const pdfBuffer = await pdfRespone.arrayBuffer();
         const binaryPdf = Buffer.from(pdfBuffer);
-        fs.writeFileSync(path, binaryPdf, 'binary');
+        fs.writeFileSync(path, binaryPdf);
     } catch (error) {
         console.log(`Writing error for file ${path} : ${error}`)
     }
