@@ -21,6 +21,11 @@ client.on("messageCreate", (msg) => {
     }
 
     msg.attachments.forEach(async (attachment) => {
+        const extension = attachment.filename.split(".").at(-1);
+        if(!["pdf", "jpg", "jpeg", "png"].includes(extension)) {
+            sendToConsoleAndChannel(msg.channel, `File ${attachment.filename} is not a pdf, jpg, jpeg or png file`);
+        };
+
         const path = await writeAttachment(attachment.filename, attachment.url);
         unifiedPrinter({ 
             path, 
@@ -35,10 +40,15 @@ client.on("error", (err) => {
     console.error("Something Broke!", err);
 });
 
-export function sendMessage(channel, content) {
+function sendMessage(channel, content) {
     channel.createMessage({
         content,
     })
+}
+
+export function sendToConsoleAndChannel(channel, str){
+    console.log(str);
+    sendMessage(channel, str);
 }
 
 client.connect();

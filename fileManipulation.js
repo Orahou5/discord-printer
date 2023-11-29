@@ -2,7 +2,7 @@ import fs from 'fs';
 import Os from 'os';
 import windowsPrint from "pdf-to-printer";
 import unixPrint from "unix-print";
-import { sendMessage } from './index.js';
+import { sendToConsoleAndChannel } from './index.js';
 
 const isWindows = Os.platform() === "win32"
 
@@ -29,11 +29,6 @@ console.log(isWindows);
 console.log(isMac);
 
 console.log(isUnix);
-
-function sendToConsoleAndChannel(channel, str){
-    console.log(str);
-    sendMessage(channel, str);
-}
 
 export function unifiedPrinter({ path, zoom = 100, channel, filename }){
     printerSettings.printer.print(path, ...printerSettings.otherArgs(zoom)).then(value => {
