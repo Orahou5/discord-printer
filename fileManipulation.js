@@ -15,12 +15,12 @@ let printerSettings = {};
 if(isWindows){
     printerSettings = {
         printer: windowsPrint,
-        otherArgs : (zoom) => [(zoom < 50 ? { scale : "shrink", silent: false } : { scale : "fit", silent: false })]
+        otherArgs : (zoom) => [(zoom === -1 ? undefined : zoom < 50 ? { scale : "shrink", silent: false } : { scale : "fit", silent: false })]
     }
 } else {
     printerSettings = {
         printer: unixPrint,
-        otherArgs : (zoom) => [undefined, [`-o fit-to-page -o scaling=${zoom}`]]
+        otherArgs : (zoom) => [undefined, (zoom === -1 ? undefined : [`-o fit-to-page -o scaling=${zoom}`])]
     }
 }
 
@@ -30,7 +30,7 @@ console.log("isMac : ", isMac);
 
 console.log("isUnix : ", isUnix);
 
-export function unifiedPrinter({ path, zoom = 100, channel, filename }){
+export function unifiedPrinter({ path, zoom = -1, channel, filename }){
     printerSettings.printer.print(path, ...printerSettings.otherArgs(zoom)).then(value => {
         sendToConsoleAndChannel(channel, `Sent file to the printer : ${filename}`);
     }).catch(error => {
