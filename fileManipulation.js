@@ -55,9 +55,11 @@ export async function writeAttachment(filename, stream) {
         if (!fs.existsSync("./temp")) {
             fs.mkdirSync("./temp");
         }
-        const pdfRespone = await fetch(stream);
-        const pdfBuffer = await pdfRespone.arrayBuffer();
-        const binaryPdf = Buffer.from(pdfBuffer);
+        let pdfRespone = await fetch(stream);
+        let pdfBuffer = await pdfRespone.arrayBuffer();
+        pdfRespone = null;
+        let binaryPdf = Buffer.from(pdfBuffer);
+        pdfBuffer = null;
         if(filename.endsWith(".pdf")) {
             const pages = await pdfToPng(binaryPdf, 
                 {
@@ -70,9 +72,11 @@ export async function writeAttachment(filename, stream) {
                     //pdfFilePassword: '', // Password for encrypted PDF.
                     //pagesToProcess: [1, 3, 11],   // Subset of pages to convert (first page = 1), other pages will be skipped if specified.
                     strictPagesToProcess: false, // When `true`, will throw an error if specified page number in pagesToProcess is invalid, otherwise will skip invalid page. Default value is false.
-                    verbosityLevel: 0 // Verbosity level. ERRORS: 0, WARNINGS: 1, INFOS: 5. Default value is 0.
+                    verbosityLevel: 1 // Verbosity level. ERRORS: 0, WARNINGS: 1, INFOS: 5. Default value is 0.
                 }
             )
+
+            binaryPdf = null;
 
             files.push(...pages.map(page => new FilePath("./temp", page.name)));
         } else {
