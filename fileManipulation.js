@@ -60,15 +60,8 @@ export async function writeAttachment(filename, stream) {
         pdfRespone = null;
         let binaryPdf = Buffer.from(pdfBuffer);
         pdfBuffer = null;
-
-        const file = new FilePath("./temp", filename);
-        fs.writeFileSync(file.path, binaryPdf);
-        files.push(file);
-
-        binaryPdf = null;
-
         if(filename.endsWith(".pdf")) {
-            const pages = await pdfToPng(file.path, 
+            const pages = await pdfToPng(binaryPdf, 
                 {
                     disableFontFace: true, // When `false`, fonts will be rendered using a built-in font renderer that constructs the glyphs with primitive path commands. Default value is true.
                     useSystemFonts: false, // When `true`, fonts that aren't embedded in the PDF document will fallback to a system font. Default value is false.
@@ -77,7 +70,7 @@ export async function writeAttachment(filename, stream) {
                     outputFolder: './temp', // Folder to write output PNG files. If not specified, PNG output will be available only as a Buffer content, without saving to a file.
                     outputFileMask: `${filename}`, // Output filename mask. Default value is 'buffer'.
                     //pdfFilePassword: '', // Password for encrypted PDF.
-                    //pagesToProcess: [1],   // Subset of pages to convert (first page = 1), other pages will be skipped if specified.
+                    pagesToProcess: [1],   // Subset of pages to convert (first page = 1), other pages will be skipped if specified.
                     strictPagesToProcess: false, // When `true`, will throw an error if specified page number in pagesToProcess is invalid, otherwise will skip invalid page. Default value is false.
                     verbosityLevel: 5 // Verbosity level. ERRORS: 0, WARNINGS: 1, INFOS: 5. Default value is 0.
                 }
