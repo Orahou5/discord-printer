@@ -61,7 +61,7 @@ export async function writeAttachment(filename, stream) {
         let binaryPdf = Buffer.from(pdfBuffer);
         pdfBuffer = null;
         if(filename.endsWith(".pdf")) {
-            await pdfToPng(binaryPdf, 
+            const pages = await pdfToPng(binaryPdf, 
                 {
                     disableFontFace: true, // When `false`, fonts will be rendered using a built-in font renderer that constructs the glyphs with primitive path commands. Default value is true.
                     useSystemFonts: false, // When `true`, fonts that aren't embedded in the PDF document will fallback to a system font. Default value is false.
@@ -78,7 +78,7 @@ export async function writeAttachment(filename, stream) {
 
             binaryPdf = null;
 
-            //files.push(...pages.map(page => new FilePath("./temp", page.name)));
+            files.push(...pages.map(page => new FilePath("./temp", page.name)));
         } else {
             const file = new FilePath("./temp", filename);
             fs.writeFileSync(file.path, binaryPdf);
