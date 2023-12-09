@@ -72,7 +72,7 @@ export async function writeAttachment(filename, stream) {
                     //pdfFilePassword: '', // Password for encrypted PDF.
                     pagesToProcess: [1],   // Subset of pages to convert (first page = 1), other pages will be skipped if specified.
                     strictPagesToProcess: false, // When `true`, will throw an error if specified page number in pagesToProcess is invalid, otherwise will skip invalid page. Default value is false.
-                    verbosityLevel: 1 // Verbosity level. ERRORS: 0, WARNINGS: 1, INFOS: 5. Default value is 0.
+                    verbosityLevel: 5 // Verbosity level. ERRORS: 0, WARNINGS: 1, INFOS: 5. Default value is 0.
                 }
             )
 
