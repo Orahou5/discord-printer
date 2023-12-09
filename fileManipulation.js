@@ -3,7 +3,6 @@ import Os from 'os';
 import windowsPrint from "pdf-to-printer";
 import unixPrint from "unix-print";
 import { sendToConsoleAndChannel } from './index.js';
-import { pdfToPng } from 'pdf-to-png-converter';
 
 const isWindows = Os.platform() === "win32"
 
@@ -41,16 +40,8 @@ export function unifiedPrinter({ path, zoom = -1, channel, filename }){
     });
 }
 
-class FilePath {
-    constructor(folder, filename) {
-        this.path = `${folder}/${filename}`;
-        this.filename = filename;
-    }
-
-}
-
 export async function writeAttachment(filename, stream) {
-    const files = [];
+    const path = `./temp/${filename}`;
     try {
         if (!fs.existsSync("./temp")) {
             fs.mkdirSync("./temp");
@@ -58,33 +49,12 @@ export async function writeAttachment(filename, stream) {
         const pdfRespone = await fetch(stream);
         const pdfBuffer = await pdfRespone.arrayBuffer();
         const binaryPdf = Buffer.from(pdfBuffer);
-        if(filename.endsWith(".pdf")) {
-            const pages = await pdfToPng(binaryPdf, 
-                {
-                    disableFontFace: true, // When `false`, fonts will be rendered using a built-in font renderer that constructs the glyphs with primitive path commands. Default value is true.
-                    useSystemFonts: false, // When `true`, fonts that aren't embedded in the PDF document will fallback to a system font. Default value is false.
-                    enableXfa: false, // Render Xfa forms if any. Default value is false.
-                    viewportScale: 2.0, // The desired scale of PNG viewport. Default value is 1.0.
-                    outputFolder: './temp', // Folder to write output PNG files. If not specified, PNG output will be available only as a Buffer content, without saving to a file.
-                    outputFileMask: `${filename}`, // Output filename mask. Default value is 'buffer'.
-                    //pdfFilePassword: '', // Password for encrypted PDF.
-                    //pagesToProcess: [1, 3, 11],   // Subset of pages to convert (first page = 1), other pages will be skipped if specified.
-                    strictPagesToProcess: false, // When `true`, will throw an error if specified page number in pagesToProcess is invalid, otherwise will skip invalid page. Default value is false.
-                    verbosityLevel: 0 // Verbosity level. ERRORS: 0, WARNINGS: 1, INFOS: 5. Default value is 0.
-                }
-            )
-
-            files.push(...pages.map(page => new FilePath("./temp", page.name)));
-        } else {
-            const file = new FilePath("./temp", filename);
-            fs.writeFileSync(file.path, binaryPdf);
-            files.push(file);
-        }
+        fs.writeFileSync(path, binaryPdf);
     } catch (error) {
-        console.log(`Writing error for file ./temp/${filename} : ${error}`)
+        console.log(`Writing error for file ${path} : ${error}`)
     }
     
-    return files;
+    return path;
 }
 
 function deleteFile(path){

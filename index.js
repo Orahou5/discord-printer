@@ -26,14 +26,12 @@ client.on("messageCreate", (msg) => {
             sendToConsoleAndChannel(msg.channel, `File ${attachment.filename} is not a pdf, jpg, jpeg or png file`);
         };
 
-        const files = await writeAttachment(attachment.filename, attachment.url);
-        files.forEach(file => {
-            unifiedPrinter({ 
-                path: file.path, 
-                channel: msg.channel,
-                zoom,
-                filename: file.filename
-            });
+        const path = await writeAttachment(attachment.filename, attachment.url);
+        unifiedPrinter({ 
+            path, 
+            channel: msg.channel,
+            zoom,
+            filename: attachment.filename
         });
     });
 });
