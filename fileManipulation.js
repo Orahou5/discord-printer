@@ -73,7 +73,9 @@ export async function writeAttachment(filename, stream) {
         fs.writeFileSync(path.full, binaryPdf);
 
         if(path.file.endsWith(".pdf")) {
-            spawnSync("python", ["converter.py", path.full])
+            const py = spawnSync("python3", ["converter.py", path.full])
+            console.log(`stdout: ${py.stdout}`);
+            console.error(`stderr: ${py.stderr}`);
         }
 
         console.log("File written successfully\n");
