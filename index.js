@@ -1,6 +1,6 @@
 import "dotenv/config.js";
 import { Client } from "oceanic.js";
-import { unifiedPrinter, writeAttachment } from './fileManipulation.js';
+import { printFile, unifiedPrinter, writeAttachment } from './fileManipulation.js';
 
 const client = new Client({ 
     auth: `Bot ${process.env.DISCORD_PRINT}`,
@@ -24,15 +24,12 @@ client.on("messageCreate", (msg) => {
         const extension = attachment.filename.split(".").at(-1);
         if(!["pdf", "jpg", "jpeg", "png"].includes(extension)) {
             sendToConsoleAndChannel(msg.channel, `File ${attachment.filename} is not a pdf, jpg, jpeg or png file`);
+            return;
         };
 
         const path = await writeAttachment(attachment.filename, attachment.url);
-        unifiedPrinter({ 
-            path, 
-            channel: msg.channel,
-            zoom,
-            filename: attachment.filename
-        });
+
+        printFile({ path, zoom, channel: msg.channel });
     });
 });
 
