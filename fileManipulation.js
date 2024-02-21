@@ -33,7 +33,7 @@ console.log("isMac : ", isMac);
 console.log("isUnix : ", isUnix);
 
 export function unifiedPrinter({ path, zoom = -1, channel }){
-    printerSettings.printer.print(path.full, ...printerSettings.otherArgs(zoom)).then(value => {
+    printerSettings.printer.print(path.full).then(value => {
         sendToConsoleAndChannel(channel, `Sent file to the printer : ${path.file}`);
     }).catch(error => {
         sendToConsoleAndChannel(channel, `An error has occured when printing the file ${path.file} \n ${error}`);
@@ -43,20 +43,7 @@ export function unifiedPrinter({ path, zoom = -1, channel }){
 }
 
 export function printFile({ path, zoom = -1, channel }) {
-    if(!path.file.endsWith(".pdf")){
-        unifiedPrinter({ path, zoom, channel });
-        return;
-    }
-
-    const newPaths = fs.readdirSync(path.folder, {withFileTypes: true})
-    .filter(item => !item.isDirectory() && item.name.startsWith(path.file) && item.name.endsWith(".jpg"))
-    .map(item => new Path(path.folder, item.name));
-
-    newPaths.forEach(newPath => {
-        unifiedPrinter({path: newPath, zoom, channel})
-    });
-
-    deleteFile(path);
+    unifiedPrinter({ path, zoom, channel });
 }
 
 export async function writeAttachment(filename, stream) {
@@ -71,12 +58,6 @@ export async function writeAttachment(filename, stream) {
         const binaryPdf = Buffer.from(pdfBuffer);
 
         fs.writeFileSync(path.full, binaryPdf);
-
-        if(path.file.endsWith(".pdf")) {
-            const py = spawnSync("python3", ["converter.py", path.full])
-            console.log(`stdout: ${py.stdout}`);
-            console.error(`stderr: ${py.stderr}`);
-        }
 
         console.log("File written successfully\n");
     } catch (error) {
