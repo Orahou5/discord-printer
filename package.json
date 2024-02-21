@@ -5,7 +5,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pm2-start": "pm2 start index.js --name discord-printer",
+    "pm2-stop": "pm2 stop discord-printer",
+    "pm2-restart": "pm2 restart discord-printer"
   },
   "author": "",
   "license": "ISC",
